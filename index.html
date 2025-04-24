@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Compra BAI Token</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f5f5f5;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+    }
+    #connectButton, #buyButton {
+      padding: 1rem;
+      background-color: #3b3bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+      width: 100%;
+      font-size: 1rem;
+    }
+    input {
+      padding: 1rem;
+      width: 100%;
+      margin-top: 10px;
+      font-size: 1rem;
+    }
+    #status {
+      margin-top: 10px;
+      text-align: center;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+<h1>BAI Token - Avalanche</h1>
+
+<p><strong>Precio:</strong> 1 AVAX = 250,000 BAI</p>
+<p><strong>Contrato de BAI:</strong> <span id="baiAddress">0xd90eb59747244FE07f863e3b09f031967d051144</span></p>
+<p><strong>Contrato de venta:</strong> <span id="saleAddress">0xCB505Bc99a2ABA479e10a3Ad25FB93c01a7F55f6</span></p>
+
+<button id="connectButton">Conectar Wallet</button>
+
+<input id="avaxAmount" placeholder="Cantidad de AVAX a usar">
+<button id="buyButton">Comprar BAI</button>
+
+<div id="status"></div>
+
+<script>
+  let web3;
+  let saleAddress = "0xCB505Bc99a2ABA479e10a3Ad25FB93c01a7F55f6";
+
+  document.getElementById('connectButton').onclick = async () => {
+    if (window.ethereum) {
+      web3 = new Web3(window.ethereum);
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      document.getElementById("status").innerText = "Wallet conectada.";
+    } else {
+      alert("Instala MetaMask para continuar.");
+    }
+  };
+
+  document.getElementById('buyButton').onclick = async () => {
+    const avax = document.getElementById('avaxAmount').value;
+    if (!web3 || !avax) return;
+
+    const accounts = await web3.eth.getAccounts();
+    const amount = web3.utils.toWei(avax, 'ether');
+
+    web3.eth.sendTransaction({
+      from: accounts[0],
+      to: saleAddress,
+      value: amount
+    }).then(() => {
+      document.getElementById("status").innerText = "Compra exitosa.";
+    }).catch((err) => {
+      document.getElementById("status").innerText = "Error: " + err.message;
+    });
+  };
+</script>
+
+</body>
+</html>
